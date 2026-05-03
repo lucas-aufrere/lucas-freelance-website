@@ -6,6 +6,7 @@ import {
   PROJECT_COUNT,
   activeSlotIndex,
   getHasInteracted,
+  getOpenSlug,
   getRotation,
   subscribe,
 } from "@/components/projets/rotondeStore";
@@ -17,11 +18,24 @@ function getHasInteractedServerSnapshot(): boolean {
   return false;
 }
 
-export function RotondeOverlay(): React.ReactElement {
+function getOpenSlugServerSnapshot(): string | null {
+  return null;
+}
+
+export function RotondeOverlay(): React.ReactElement | null {
   const hasInteracted = useSyncExternalStore(
     subscribe,
     getHasInteracted,
     getHasInteractedServerSnapshot,
+  );
+  // Hide the entire rotonde HUD (index counter, hint, progress dots)
+  // as soon as a project is opened — the open project view has its
+  // own header (meta + title + counter) on the left, this would
+  // otherwise duplicate / leak through.
+  const openSlug = useSyncExternalStore(
+    subscribe,
+    getOpenSlug,
+    getOpenSlugServerSnapshot,
   );
 
   const [activeIdx, setActiveIdx] = useState(0);
@@ -44,6 +58,8 @@ export function RotondeOverlay(): React.ReactElement {
   const indexLabel = activeProject
     ? `${activeProject.index} / ${TOTAL_SLOTS}`
     : `01 / ${TOTAL_SLOTS}`;
+
+  if (openSlug !== null) return null;
 
   return (
     <div className={styles.root} aria-hidden="true">

@@ -578,12 +578,21 @@ function ProjectPlane({
 
       if (planeT > 0) {
         // Target = world (0, 0, -(R + DOLLY)) so the plane lands dead
-        // ahead of the camera regardless of its slot. Convert that back
-        // into group-local coords using the frozen group rotation θ.
+        // ahead of the camera regardless of its slot. On portrait
+        // viewports the plane is also pushed down (Y offset) so it
+        // sits below the fixed mobile text panel — the FocusedGallery
+        // applies the same offset, so the hand-off stays seamless.
         const θ = getRotation();
         const D = RADIUS + DOLLY_DISTANCE;
+        const camera2 = state.camera as { fov?: number };
+        const fovDegPP = camera2.fov ?? 72;
+        const yOffset = computeFocusedPlaneYOffset(
+          state.size.width,
+          state.size.height,
+          fovDegPP,
+        );
         const targetX = Math.sin(θ) * D;
-        const targetY = 0;
+        const targetY = yOffset;
         const targetZ = -Math.cos(θ) * D;
         const targetRotY = -θ;
 
@@ -664,6 +673,23 @@ const SLIDER_FILL_W = 0.78;
 const SLIDER_FILL_H = 0.88;
 const SLIDER_GAP_RATIO = 0.08; // gap between slides as a fraction of plane width
 const SLIDER_ASPECT = MAIN_PLANE_W / MAIN_PLANE_H; // 16:9
+
+// Vertical offset (in world units) for the focused plane on portrait
+// viewports — pushes the image down to the lower half of the viewport
+// so it sits below the fixed text panel pinned at the top of mobile.
+// 0 on landscape so desktop is unchanged.
+function computeFocusedPlaneYOffset(
+  canvasW: number,
+  canvasH: number,
+  fovDeg: number,
+): number {
+  if (canvasW >= canvasH) return 0;
+  const fovRad = (fovDeg * Math.PI) / 180;
+  const visibleH = 2 * RADIUS * Math.tan(fovRad / 2);
+  // Shift down by ~22% of visible height — places the plane center
+  // roughly at viewport Y = 72% (= bottom third of the viewport).
+  return -visibleH * 0.22;
+}
 
 // Single source of truth for the focused-state plane size (in world
 // units). Used by both:
@@ -774,7 +800,17 @@ function FocusedGalleryInner({
     }
 
     const slideProgress = getProjectScroll() / state.size.height;
+    // Match the rotonde plane's mobile-portrait Y offset so the hand-off
+    // (rotonde plane hides → gallery becomes visible) lands on the
+    // exact same world Y. On landscape viewports yOffset = 0, so this
+    // is a no-op for desktop.
+    const yOffset = computeFocusedPlaneYOffset(
+      state.size.width,
+      state.size.height,
+      fov,
+    );
     group.position.x = -slideProgress * pitch;
+    group.position.y = yOffset;
   });
 
   return (

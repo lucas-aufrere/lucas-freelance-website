@@ -28,8 +28,16 @@
   color: $color-fg-muted;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  transition: opacity $motion-duration-fast $motion-ease-soft;
 
   @include tablet-up {
     top: calc(#{$header-height-desktop} + #{$space-3});
+  }
+
+  // Kept in the DOM for SEO + the section's aria-labelledby reference,
+  // but visually muted as soon as a project is opened.
+  &[data-hidden="true"] {
+    opacity: 0;
+    pointer-events: none;
   }
 }

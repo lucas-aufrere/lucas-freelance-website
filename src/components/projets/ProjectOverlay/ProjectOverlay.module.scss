@@ -1,11 +1,11 @@
 @use "styles/variables" as *;
 @use "styles/mixins" as *;
 
-// The whole overlay is a scrollable surface: text column sticky on the
-// left, image column flowing on the right. As the user scrolls, the
-// stacked images defile through the right column while the text stays
-// in place. The first image matches the 3D plane visible behind, so the
-// hand-off from WebGL focus dolly to HTML is seamless.
+// The whole overlay is a scrollable surface. Desktop layout is two
+// columns (text sticky on the left, gallery scroll-runway on the right).
+// Mobile collapses to a single column: opaque text panel at the top
+// (100dvh), gallery scroll-runway below it. Scrolling past the text
+// reveals the WebGL slider planes rendered behind the overlay.
 .root {
   position: fixed;
   inset: 0;
@@ -15,8 +15,9 @@
   overscroll-behavior: contain;
   pointer-events: auto;
 
+  // Mobile-first: single column.
   display: grid;
-  grid-template-columns: 56% 44%;
+  grid-template-columns: 1fr;
 
   // Mirrors focusProgress each frame for the fixed backdrop / close
   // button opacity.
@@ -26,31 +27,40 @@
   &::-webkit-scrollbar {
     display: none;
   }
+
+  @include tablet-up {
+    grid-template-columns: 56% 44%;
+  }
 }
 
-// Fixed editorial backdrop on the left half of the viewport. Stays in
-// place even as the gallery scrolls, so the text column always reads on
-// top of the same gradient.
+// Editorial gradient backdrop on the left half — desktop only. On mobile
+// the .content panel itself carries an opaque background so the 3D
+// plane can never bleed through behind the text.
 .backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 56%;
-  background: linear-gradient(
-    to right,
-    rgba(5, 5, 5, 0.88) 0%,
-    rgba(5, 5, 5, 0.78) 70%,
-    rgba(5, 5, 5, 0) 100%
-  );
-  backdrop-filter: blur(20px) saturate(0.7);
-  -webkit-backdrop-filter: blur(20px) saturate(0.7);
-  opacity: var(--focus-progress, 0);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 
-  @include reduced-motion {
-    opacity: 1;
+  @include tablet-up {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 56%;
+    background: linear-gradient(
+      to right,
+      rgba(5, 5, 5, 0.88) 0%,
+      rgba(5, 5, 5, 0.78) 70%,
+      rgba(5, 5, 5, 0) 100%
+    );
+    backdrop-filter: blur(20px) saturate(0.7);
+    -webkit-backdrop-filter: blur(20px) saturate(0.7);
+    opacity: var(--focus-progress, 0);
+    pointer-events: none;
+    z-index: 0;
+
+    @include reduced-motion {
+      opacity: 1;
+    }
   }
 }
 
@@ -87,7 +97,7 @@
   }
 }
 
-// --- Left column — sticky text ------------------------------------------
+// --- Text column ---------------------------------------------------------
 
 .contentColumn {
   grid-column: 1;
@@ -95,27 +105,65 @@
   z-index: 2;
 }
 
-// Text container — left-aligned, constrained width, sticks centered in
-// the viewport so it reads steady while the gallery scrolls past on the
-// right. Opacity 0 by default so the raw text never flashes before
-// useGSAP has had a chance to split it into masks.
+// Mobile: text panel pinned to the TOP of the viewport (position fixed)
+// with an opaque $color-bg fill — but height is auto so the bg only
+// covers the actual text content, not the empty area below. Visually
+// the panel is a compact opaque header followed by the 3D slider plane
+// in the lower portion of the viewport. Left-aligned editorial text.
 .content {
-  position: sticky;
+  position: fixed;
   top: 0;
-  height: 100dvh;
+  left: 0;
+  right: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: $space-3;
-  justify-content: center;
-  padding: calc(#{$header-height-desktop} + #{$space-6}) $space-5 $space-6
-    calc(#{$gutter} + #{$space-3});
+  align-items: flex-start;
+  text-align: left;
+  justify-content: flex-start;
+  gap: $space-2;
+  width: 100%;
+  height: auto;
+  padding: calc(#{$header-height-mobile} + #{$space-3}) $gutter $space-4;
+  background-color: transparent;
   pointer-events: auto;
   opacity: 0;
+
+  @include tablet-up {
+    position: sticky;
+    top: 0;
+    left: auto;
+    right: auto;
+    height: 100dvh;
+    gap: $space-3;
+    padding: calc(#{$header-height-desktop} + #{$space-6}) $space-5 $space-6
+      calc(#{$gutter} + #{$space-3});
+  }
 
   @include desktop-up {
     padding-left: calc(#{$gutter} + #{$space-5});
     padding-right: $space-5;
     gap: $space-4;
+  }
+}
+
+// "Scroll to explore" hint under the gallery counter — mobile only.
+// Sits at the bottom of the fixed text panel as a subtle prompt that
+// the 3D slider below is scrollable.
+.scrollHint {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-family: $font-mono;
+  font-size: $font-label-sm;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $color-fg-muted;
+  margin: 0;
+  padding-top: $space-1;
+
+  @include tablet-up {
+    display: none;
   }
 }
 
@@ -126,37 +174,62 @@
   gap: $space-3;
 }
 
+// Mobile-first: tighter clamp so long names like "JACQUEMUS" or
+// "DEXNILL PRODUCTIONS" don't blow past the screen edge. Desktop
+// uses the editorial scale.
 .title {
   font-family: $font-display;
-  font-size: clamp(2.5rem, 7vw, 7rem);
+  font-size: clamp(2rem, 9vw, 3.25rem);
   font-weight: 500;
-  line-height: 0.92;
-  letter-spacing: -0.04em;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
   color: $color-fg;
   text-transform: uppercase;
   margin: 0;
+
+  @include tablet-up {
+    font-size: clamp(2.5rem, 7vw, 7rem);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+  }
 }
 
 .role {
-  @include font-body($font-body-l);
+  @include font-body($font-body-m);
   color: $color-fg-secondary;
   font-style: italic;
+
+  @include tablet-up {
+    @include font-body($font-body-l);
+  }
 }
 
 .description {
-  @include font-body($font-body-m);
+  @include font-body($font-body-s);
   color: $color-fg-secondary;
-  max-width: 32rem;
+  max-width: 100%;
+
+  @include tablet-up {
+    @include font-body($font-body-m);
+    max-width: 32rem;
+  }
 }
 
+// Specs (Type / Stack / Tags) — kept off mobile per design ask. The
+// title + role + caption + counter are enough to read the project on
+// a small screen; the technical breakdown is a desktop refinement.
 .specs {
-  display: flex;
-  flex-direction: column;
-  gap: $space-1;
-  margin: 0;
-  padding-top: $space-3;
-  border-top: 1px solid $color-line;
-  max-width: 32rem;
+  display: none;
+
+  @include tablet-up {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    margin: 0;
+    padding-top: $space-3;
+    border-top: 1px solid $color-line;
+    max-width: 32rem;
+  }
 }
 
 .specRow {
@@ -177,23 +250,22 @@
   }
 }
 
-// --- Right column — stacked gallery -------------------------------------
-// Just images flowing in normal block order. Each item has the same
-// 16:9 aspect ratio as the 3D plane geometry (8 × 4.5 in world units),
-// so they read as a continuation of the focused project image. When the
-// user scrolls the overlay, the column moves naturally upward and the
-// next frame slides into the same spot the plane occupied.
-
-// The gallery column is now a pure scroll-runway — no rendered images.
-// The 3D <FocusedGallery /> in RotondeScene paints the slider behind
-// the overlay; this column only provides scrollable height so vertical
-// wheel input drives the slider's horizontal translation.
+// --- Gallery (scroll runway) --------------------------------------------
+// Pure scroll runway — the 3D <FocusedGallery /> in RotondeScene paints
+// the slider behind the overlay; this column only provides scrollable
+// height so vertical wheel input drives the slider's horizontal
+// translation. Mobile stacks below the text panel; desktop sits in the
+// right grid column.
 .gallery {
-  grid-column: 2;
+  grid-column: 1;
   display: flex;
   flex-direction: column;
   background-color: transparent;
   pointer-events: none;
+
+  @include tablet-up {
+    grid-column: 2;
+  }
 }
 
 .scrollSlot {

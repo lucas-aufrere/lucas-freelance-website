@@ -1,14 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { TransitionLink as Link } from "@/components/transitions/TransitionLink";
 import { usePathname } from "next/navigation";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useLenis } from "@/hooks/useLenis";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { primaryNav } from "@/lib/nav";
+import {
+  getOpenSlug,
+  subscribe as subscribeRotonde,
+} from "@/components/projets/rotondeStore";
 import { MobileMenu } from "./MobileMenu";
 import styles from "./Header.module.scss";
+
+function getOpenSlugServerSnapshot(): string | null {
+  return null;
+}
 
 type HeaderState = "top" | "scrolled-up" | "scrolled-down";
 
@@ -18,6 +26,16 @@ export function Header(): React.ReactElement {
   const lenis = useLenis();
   const reducedMotion = usePrefersReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
+  // Hide the global header (logo + nav + burger) as soon as a project
+  // is open in the rotonde — the open project view has its own close
+  // button + chrome, the page header would otherwise leak through the
+  // transparent areas of the project overlay.
+  const projectOpenSlug = useSyncExternalStore(
+    subscribeRotonde,
+    getOpenSlug,
+    getOpenSlugServerSnapshot,
+  );
+  const projectOpen = projectOpenSlug !== null;
 
   const headerState: HeaderState = (() => {
     if (reducedMotion) return "scrolled-up";
@@ -65,6 +83,7 @@ export function Header(): React.ReactElement {
       className={styles.root}
       data-state={headerState}
       data-menu-open={menuOpen ? "true" : "false"}
+      data-project-open={projectOpen ? "true" : "false"}
     >
       <div className={styles.inner}>
         <Link href="/" className={styles.logo}>

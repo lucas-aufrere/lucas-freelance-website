@@ -76,6 +76,13 @@ function splitTextIntoLines(el: HTMLElement): HTMLElement[] {
     wrap.style.overflow = "hidden";
     wrap.style.paddingBottom = "0.08em";
     wrap.style.marginBottom = "-0.08em";
+    // Horizontal slack so the last glyph's ink overhang on a line
+    // (common with -graph descenders, italic slants, narrow viewports
+    // where the last word lands near the right edge) doesn't get
+    // shaved by the mask. Compensated by negative margin so the
+    // wrap's effective box stays the same.
+    wrap.style.paddingRight = "0.12em";
+    wrap.style.marginRight = "-0.12em";
 
     const inner = document.createElement("span");
     inner.style.display = "block";
@@ -474,6 +481,11 @@ export function ProjectOverlay(): React.ReactElement | null {
             {String(currentIndex + 1).padStart(2, "0")}
             {" / "}
             {String(gallery.length).padStart(2, "0")}
+          </p>
+          {/* Mobile-only hint that the panel below is a scrollable
+              slider. Hidden via CSS at tablet-up. */}
+          <p className={styles.scrollHint} aria-hidden="true">
+            Scroll to explore
           </p>
           <dl className={styles.specs}>
             <div className={styles.specRow}>

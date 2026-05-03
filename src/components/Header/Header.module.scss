@@ -10,11 +10,21 @@
   height: $header-height-mobile;
   transition:
     transform $motion-duration-fast $motion-ease-soft,
+    opacity $motion-duration-fast $motion-ease-soft,
     background-color $motion-duration-fast $motion-ease-soft,
     border-color $motion-duration-fast $motion-ease-soft,
     backdrop-filter $motion-duration-fast $motion-ease-soft;
   background-color: transparent;
   border-bottom: 1px solid transparent;
+
+  // Hide the entire header (logo + nav + burger) when a project is
+  // opened in the rotonde — both desktop and mobile. The open project
+  // view has its own close button.
+  &[data-project-open="true"] {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
 
   @include tablet-up {
     height: $header-height-desktop;
