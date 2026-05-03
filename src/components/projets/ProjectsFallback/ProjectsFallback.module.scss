@@ -1,16 +1,35 @@
 @use "styles/variables" as *;
 @use "styles/mixins" as *;
 
-// SEO-only: the entire fallback section is collapsed via the
-// visually-hidden pattern. Crawlers and screen readers still parse the
-// full structured content (h2 / h3 / next/image alt / paragraphs / link
-// hrefs / stack list), but visually it occupies no space and never
-// breaks the rotonde's full-bleed 100dvh hero.
+// SEO-only by default: the entire fallback section is collapsed via
+// the visually-hidden pattern. Crawlers and screen readers still parse
+// the full structured content (h2 / h3 / next/image alt / paragraphs /
+// link hrefs / stack list), but visually it occupies no space and
+// never breaks the rotonde's full-bleed 100dvh hero.
+//
+// Under prefers-reduced-motion the WebGL rotonde is suppressed entirely
+// (see RotondeSection), so this fallback becomes the only thing on the
+// page — promote it back to a fully visible, scrollable section.
 .root {
   @include visually-hidden;
   // Allow the long descriptions / list rows to keep their wrapping in
   // case any tool (rare) bypasses the clip and reads the visible flow.
   white-space: normal;
+
+  @media (prefers-reduced-motion: reduce) {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding-top: calc(#{$header-height-mobile} + #{$space-6});
+    padding-bottom: $section-spacing;
+    overflow: visible;
+    clip: auto;
+
+    @include tablet-up {
+      padding-top: calc(#{$header-height-desktop} + #{$space-7});
+    }
+  }
 }
 
 .inner {
