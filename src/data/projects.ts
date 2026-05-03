@@ -284,19 +284,144 @@ export const baseProjects: readonly Project[] = [
       },
     ],
   },
+  {
+    slug: "poivreblanc",
+    index: "05",
+    name: "Poivre Blanc",
+    year: "2025",
+    tags: ["Client", "Restaurant"],
+    kind: "Site sur-mesure",
+    stack: "Next.js · GSAP",
+    role: "Direction front-end & intégration",
+    href: "/projets/poivreblanc",
+    image: "/projetSlider/poivreblanc/poivre-blanc.webp",
+    alt: "Aperçu du projet Poivre Blanc",
+    summary:
+      "Site éditorial pour la table Poivre Blanc — photographie produit pleine page, hiérarchie typographique soignée.",
+    description:
+      "Site sur-mesure pour la table Poivre Blanc, pensé comme une carte éditoriale. Hero plein cadre, mise en page magazine, transitions douces entre les sections menu, produit et histoire. Photographie au cœur du parcours, typographie serif expressive.",
+    schemaKeywords:
+      "Next.js, GSAP, site restaurant, photographie éditoriale, typographie serif",
+    gallery: [
+      {
+        src: "/projetSlider/poivreblanc/poivre-blanc.webp",
+        caption:
+          "Site éditorial pour la table Poivre Blanc. Hero plein cadre, mise en page magazine, photographie au cœur du parcours, typographie serif expressive.",
+      },
+      {
+        src: "/projetSlider/poivreblanc/poivre-blanc-hero.webp",
+        title: "Hero d'accueil",
+        subtitle: "Photographie pleine page",
+        caption:
+          "Premier contact pensé comme une couverture de magazine — image dominante, titre minimal, micro-interactions discrètes.",
+      },
+      {
+        src: "/projetSlider/poivreblanc/poivre-blanc-menu.webp",
+        title: "Carte & menu",
+        subtitle: "Lecture éditoriale",
+        caption:
+          "Carte mise en page comme un menu d'auteur — typographie serif, alignements asymétriques, blanc tournant qui laisse respirer chaque plat.",
+      },
+      {
+        src: "/projetSlider/poivreblanc/poivre-blanc-produit.webp",
+        title: "Fiche produit",
+        subtitle: "Photographie au cadre",
+        caption:
+          "Page produit immersive, photographie plein cadre, hiérarchie typographique sobre. La cuisine est le sujet, l'interface s'efface.",
+      },
+      {
+        src: "/projetSlider/poivreblanc/poirvre-blanc-book.webp",
+        title: "Le livre",
+        subtitle: "Story & savoir-faire",
+        caption:
+          "Section narrative — l'équipe, le terroir, le geste. Composition longue page, rythme de lecture lent, transitions atmosphériques entre chapitres.",
+      },
+    ],
+  },
+  {
+    slug: "bonbon-sauvage",
+    index: "06",
+    name: "BonBon Sauvage",
+    year: "2025",
+    tags: ["Client", "Spiritueux"],
+    kind: "Site sur-mesure",
+    stack: "WordPress · Elementor · GSAP",
+    role: "Direction front-end & intégration",
+    href: "/projets/bonbon-sauvage",
+    image: "/projetSlider/bonbonsauvage/bonbon-hero-1.webp",
+    alt: "Aperçu du projet BonBon Sauvage",
+    summary:
+      "Site éditorial pour une maison de gin artisanal — photographie produit pleine page, recettes cocktails et univers de marque.",
+    description:
+      "Site sur-mesure pour BonBon Sauvage, marque de gin artisanal. Stack WordPress + Elementor + GSAP — photographie produit pleine page, recettes cocktails illustrées, extension de gamme vermouth, hiérarchie typographique éditoriale. Animations GSAP scroll-tied pour rythmer la découverte.",
+    schemaKeywords:
+      "WordPress, Elementor, GSAP, site spiritueux, photographie éditoriale, recettes cocktails",
+    gallery: [
+      {
+        src: "/projetSlider/bonbonsauvage/bonbon-hero-1.webp",
+        caption:
+          "Site éditorial pour BonBon Sauvage, maison de gin artisanal. WordPress + Elementor + GSAP — photographie produit pleine page, recettes cocktails illustrées, identité de marque assumée.",
+      },
+      {
+        src: "/projetSlider/bonbonsauvage/bonbon menu.webp",
+        title: "Menu boutique",
+        subtitle: "Sélection de produits",
+        caption:
+          "Carte produits mise en page comme un menu d'auteur — typographie éditoriale, photographie produit centrée, rythme calme entre les références.",
+      },
+      {
+        src: "/projetSlider/bonbonsauvage/home-page-recette.webp",
+        title: "Recettes cocktails",
+        subtitle: "Mise en image",
+        caption:
+          "Section recettes — cocktails illustrés en photographie pleine page, étapes typographiées en parallèle. Le geste prime sur la liste d'ingrédients.",
+      },
+      {
+        src: "/projetSlider/bonbonsauvage/home-page-recette-2.webp",
+        title: "Recette détaillée",
+        subtitle: "Lecture longue",
+        caption:
+          "Vue détaillée d'une recette signature — composition magazine, alternance image / texte, animations GSAP scroll-tied pour révéler chaque étape.",
+      },
+      {
+        src: "/projetSlider/bonbonsauvage/bonbon recette 2.webp",
+        title: "Variation",
+        subtitle: "Photographie en cadre",
+        caption:
+          "Variation produit, photographie au cadre, micro-interactions au hover. Identité produit forte, fond travaillé.",
+      },
+      {
+        src: "/projetSlider/bonbonsauvage/home page creation.webp",
+        title: "Création maison",
+        subtitle: "Savoir-faire",
+        caption:
+          "Section histoire & création — la maison, l'atelier, les botaniques. Composition longue, rythme lent, transitions atmosphériques.",
+      },
+      {
+        src: "/projetSlider/bonbonsauvage/vermouth-hero.webp",
+        title: "Extension Vermouth",
+        subtitle: "Gamme parallèle",
+        caption:
+          "Extension de gamme vermouth — hero dédié, identité visuelle tirée vers l'apéritif italien. Variations de palette par gamme.",
+      },
+      {
+        src: "/projetSlider/bonbonsauvage/home page contact.webp",
+        title: "Contact",
+        subtitle: "Pro & particuliers",
+        caption:
+          "Page contact — formulaires distincts pour les pros et les amateurs, intégration éditoriale au flux du site, validation discrète.",
+      },
+    ],
+  },
 ];
 
-// 8 slots — base projects doubled (with -bis slugs) to densify the ring
-// and cut the angular gap between adjacent columns in half.
-export const projects: readonly Project[] = [
-  ...baseProjects,
-  ...baseProjects.map((p, i) => ({
-    ...p,
-    slug: `${p.slug}-bis`,
-    index: (baseProjects.length + i + 1).toString().padStart(2, "0"),
-    href: `${p.href}-bis`,
-  })),
-];
+// One slot per real project — no -bis duplicates. With 6 unique
+// projects on a circle of R = 14, the angular step is 60° per slot
+// and the chord between adjacent planes is ~14 world units, which
+// keeps the ring readable without forcing the same project to appear
+// twice on the main row. Side rows still vary their starting slot via
+// cyclicShift in RotondeScene.
+export const projects: readonly Project[] = baseProjects;
 
 export function findProjectBySlug(slug: string): Project | undefined {
   return projects.find((p) => p.slug === slug);

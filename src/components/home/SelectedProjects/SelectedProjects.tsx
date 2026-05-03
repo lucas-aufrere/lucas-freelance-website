@@ -64,6 +64,28 @@ const projects: readonly Project[] = [
     image: "/projetSlider/fyconic-projet-lucas-aufrere.webp",
     alt: "Aperçu du projet Fyconic",
   },
+  {
+    index: "05",
+    name: "Poivre Blanc",
+    tags: ["Client", "Restaurant"],
+    year: "2025",
+    kind: "Site sur-mesure",
+    stack: "Next.js · GSAP",
+    href: "/projets",
+    image: "/projetSlider/poivreblanc/poivre-blanc.webp",
+    alt: "Aperçu du projet Poivre Blanc",
+  },
+  {
+    index: "06",
+    name: "BonBon Sauvage",
+    tags: ["Client", "Spiritueux"],
+    year: "2025",
+    kind: "Site sur-mesure",
+    stack: "WordPress · Elementor · GSAP",
+    href: "/projets",
+    image: "/projetSlider/bonbonsauvage/bonbon-hero-1.webp",
+    alt: "Aperçu du projet BonBon Sauvage",
+  },
 ];
 
 const COPIES = 3;

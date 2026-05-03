@@ -38,8 +38,12 @@ import { useRotondeControls } from "./useRotondeControls";
 // from the center row and show different project permutations.
 // -------------------------------------------------------------------
 
-const SLOTS_PER_ROW = projects.length; // 8
-const RADIUS = 11;
+const SLOTS_PER_ROW = projects.length; // dynamic — currently 6
+// Ring radius — controls the chord length between adjacent slots.
+// 6 projects × 60° / slot → chord ≈ RADIUS world units. R = 9 packs
+// the planes tight (chord ≈ plane width + 1 world unit gap) for a
+// dense carousel feel.
+const RADIUS = 9;
 const ANGLE_STEP = (Math.PI * 2) / SLOTS_PER_ROW;
 const SIDE_OFFSET_ANGLE = Math.PI / 8; // 22.5° — half-slot, true quincunx
 
@@ -63,8 +67,12 @@ type RowConfig = {
 
 // Same canonical sequence on every row, but cyclically shifted so each row
 // starts with a different project at slot 0. Relative order (Dexnill →
-// Kengo → Jacquemus → Fyconic → …) is preserved across all rows.
-const CANONICAL_ORDER: readonly number[] = [0, 1, 2, 3, 4, 5, 6, 7];
+// Kengo → Jacquemus → Fyconic → Poivre Blanc → …) is preserved across
+// all rows. Length = projects.length (= baseProjects.length × 2).
+const CANONICAL_ORDER: readonly number[] = Array.from(
+  { length: projects.length },
+  (_, i) => i,
+);
 
 function cyclicShift(
   order: readonly number[],
