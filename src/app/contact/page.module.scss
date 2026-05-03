@@ -46,13 +46,20 @@
 
 .heroTitle {
   font-family: $font-display;
-  font-size: clamp(3.5rem, 12vw, 14rem);
+  // Mobile single-column: same clamp as the Hero (home). Desktop falls
+  // into a 5fr / 4fr two-column grid — narrower step + lower cap so
+  // the title can't overflow its column on mid-range desktops.
+  font-size: clamp(2.25rem, 12vw, 17rem);
   font-weight: 500;
   line-height: 0.9;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   color: $color-fg;
   text-transform: uppercase;
-  padding-right: 0.08em;
+  padding-right: 0.1em;
+
+  @include desktop-up {
+    font-size: clamp(2.25rem, 8vw, 12rem);
+  }
 
   @include desktop-up {
     grid-column: 1;

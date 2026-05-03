@@ -46,18 +46,23 @@
 
 .heroTitle {
   font-family: $font-display;
-  font-size: clamp(3.5rem, 12vw, 14rem);
+  // Mobile single-column: same clamp as the Hero (home) — title
+  // takes the full viewport width and scales fluidly. Desktop falls
+  // into a 5fr / 4fr two-column grid where the title sits in the
+  // narrower left column, so the vw step is reduced and the upper
+  // cap brought down to keep "SERVICES" / "PRESTATIONS" / "À PROPOS"
+  // safely inside their column.
+  font-size: clamp(2.25rem, 12vw, 17rem);
   font-weight: 500;
   line-height: 0.9;
-  // Slight negative tracking for the editorial feel, but generous enough
-  // that the right-most glyph (S in PRESTATIONS) doesn't get shaved by
-  // the container edge.
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   color: $color-fg;
   text-transform: uppercase;
-  // Defensive padding so the rightmost glyph's ink overhang stays inside
-  // the visible area at any viewport width.
-  padding-right: 0.08em;
+  padding-right: 0.1em;
+
+  @include desktop-up {
+    font-size: clamp(2.25rem, 8vw, 12rem);
+  }
 
   @include desktop-up {
     grid-column: 1;

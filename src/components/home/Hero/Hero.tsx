@@ -274,6 +274,12 @@ export function Hero(): React.ReactElement {
 
     const LIFT_MAX = 70; // px of translateZ at the cursor's exact position
     const SCALE_MIN = 0.84; // tile scale at max lift — shrinks as it rises
+    // Match the resting-state overscale defined in CSS — keeps the
+    // 0.5% overlap that hides sub-pixel seams between adjacent tiles
+    // throughout the cursor interaction (without it, JS-driven
+    // transform would override the CSS scale and the seams would
+    // pop back as soon as the user moved the cursor).
+    const BASE_SCALE = 1.005;
     const RADIUS_FRACTION = 0.35; // falloff radius, relative to portrait size
     const SMOOTH = 0.18; // per-frame lerp coefficient
     const ACTIVE_THRESHOLD = 0.05; // stop the loop once everything settles
@@ -337,10 +343,10 @@ export function Hero(): React.ReactElement {
         const el = tileEls[i];
         if (el) {
           const lift = next * LIFT_MAX;
-          const scale = 1 - next * (1 - SCALE_MIN);
+          const scale = (1 - next * (1 - SCALE_MIN)) * BASE_SCALE;
           el.style.transform = `translate3d(0, 0, ${lift.toFixed(
             2,
-          )}px) scale(${scale.toFixed(3)})`;
+          )}px) scale(${scale.toFixed(4)})`;
         }
       }
 

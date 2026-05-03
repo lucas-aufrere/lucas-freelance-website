@@ -22,13 +22,23 @@
     top: 0;
     left: $gutter;
     bottom: calc(#{$gutter} + 42px);
-    width: calc(40vw - #{$gutter});
+    // Native image is 1024 × 1536 (ratio 2/3). With both width AND
+    // top/bottom set, the container aspect varied with the viewport
+    // and the tile-grid background ended up stretched horizontally
+    // or vertically. Constraining only the height (top + bottom) and
+    // letting aspect-ratio drive the width keeps the photo at its
+    // intrinsic ratio on every screen size.
+    aspect-ratio: 1024 / 1536;
+    // Cap the width so the portrait can't push past 40vw on very
+    // tall viewports where height would otherwise dictate a huge
+    // derived width.
+    max-width: calc(40vw - #{$gutter});
     z-index: 0;
   }
 
   @include desktop-up {
-    width: calc(38vw - #{$gutter});
     bottom: calc(#{$gutter} + 54px);
+    max-width: calc(38vw - #{$gutter});
   }
 
   &::after {
@@ -71,6 +81,12 @@
   background-repeat: no-repeat;
   will-change: transform, opacity;
   transform-style: preserve-3d;
+  // Tiny overscale at rest so adjacent tiles overlap by ~0.5% and
+  // hide sub-pixel rounding artefacts (the 1px seams that appeared
+  // between tiles on certain viewport widths). The cursor-proximity
+  // lift in JS multiplies its computed scale by the same factor so
+  // the overlap is preserved through the interaction too.
+  transform: scale(1.005);
 }
 
 .inner {
