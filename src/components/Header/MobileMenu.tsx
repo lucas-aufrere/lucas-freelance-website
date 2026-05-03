@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import {
   AnimatePresence,
   motion,
+  useReducedMotion,
   type Variants,
 } from "motion/react";
 import { TransitionLink as Link } from "@/components/transitions/TransitionLink";
@@ -71,6 +72,19 @@ const linkVariants: Variants = {
   },
 };
 
+// Reduced-motion fallback: panel + links snap in/out without slide,
+// stagger or curtain. Visitors with prefers-reduced-motion still get
+// a fully usable menu, just no transition theatre.
+const overlayVariantsReduced: Variants = {
+  closed: { x: "0%", opacity: 0, transition: { duration: 0 } },
+  open: { x: "0%", opacity: 1, transition: { duration: 0 } },
+};
+
+const linkVariantsReduced: Variants = {
+  closed: { y: "0%", transition: { duration: 0 } },
+  open: { y: "0%", transition: { duration: 0 } },
+};
+
 function subscribeNoop(): () => void {
   return () => {};
 }
@@ -91,6 +105,11 @@ export function MobileMenu({
     getClientSnapshot,
     getServerSnapshot,
   );
+  const reducedMotion = useReducedMotion() ?? false;
+  const overlayVariantsActive = reducedMotion
+    ? overlayVariantsReduced
+    : overlayVariants;
+  const linkVariantsActive = reducedMotion ? linkVariantsReduced : linkVariants;
 
   const node = (
     <AnimatePresence>
@@ -102,7 +121,7 @@ export function MobileMenu({
           role="dialog"
           aria-modal="true"
           aria-label="Navigation principale"
-          variants={overlayVariants}
+          variants={overlayVariantsActive}
           initial="closed"
           animate="open"
           exit="closed"
@@ -135,7 +154,7 @@ export function MobileMenu({
                   <span className={styles.linkMask}>
                     <motion.span
                       className={styles.linkInner}
-                      variants={linkVariants}
+                      variants={linkVariantsActive}
                     >
                       <GlitchLink
                         href={item.href}
@@ -153,7 +172,7 @@ export function MobileMenu({
           </nav>
 
           <div className={styles.footer}>
-            <motion.span className={styles.linkMask} variants={linkVariants}>
+            <motion.span className={styles.linkMask} variants={linkVariantsActive}>
               <a
                 href="mailto:lucas@fyconic.fr"
                 className={styles.footerEmail}

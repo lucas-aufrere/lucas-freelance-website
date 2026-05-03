@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { RotondeCanvas } from "@/components/projets/RotondeCanvas/RotondeCanvas";
 import { ProjectsFallback } from "@/components/projets/ProjectsFallback/ProjectsFallback";
-import { RotondeTitle } from "./RotondeTitle";
+import { RotondeSection } from "./RotondeSection";
 import { buildPageMetadata } from "@/lib/metadata";
 import {
   projectsBreadcrumbSchema,
@@ -25,13 +24,7 @@ export default function ProjetsPage(): React.ReactElement {
           dans le canvas WebGL). */}
       <h1 className={styles.srOnly}>Projets de Lucas Aufrère</h1>
 
-      <section
-        className={styles.rotondeSection}
-        aria-labelledby="projets-rotonde-title"
-      >
-        <RotondeTitle />
-        <RotondeCanvas />
-      </section>
+      <RotondeSection />
 
       <ProjectsFallback />
 

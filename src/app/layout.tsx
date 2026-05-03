@@ -18,7 +18,10 @@ import "./globals.scss";
 const manrope = Manrope({
   subsets: ["latin"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700", "800"],
+  // Trimmed to the weights actually referenced in SCSS (300/400/500).
+  // 600/700/800 were preloaded but never used — three fewer critical
+  // font files, ~90KB shaved off initial download on mobile.
+  weight: ["300", "400", "500"],
   variable: "--font-display",
   preload: true,
 });

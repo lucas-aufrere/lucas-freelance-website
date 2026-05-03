@@ -17,6 +17,20 @@ export const metadata: Metadata = buildPageMetadata({
 export default function HomePage(): React.ReactElement {
   return (
     <>
+      {/* The hero portrait is composed of CSS background-image tiles, so
+          the browser only discovers /lucas-hero_comp.webp after CSSOM
+          parses. Preloading from the server-rendered <head> lets the
+          fetch start in parallel with HTML. The portrait is display:none
+          below 768px, so the media query keeps mobile clients from
+          downloading an asset they would never paint. */}
+      <link
+        rel="preload"
+        as="image"
+        href="/lucas-hero_comp.webp"
+        type="image/webp"
+        fetchPriority="high"
+        media="(min-width: 768px)"
+      />
       <Hero />
       <Philosophy />
       <Approche />
