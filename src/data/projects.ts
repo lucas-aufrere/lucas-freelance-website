@@ -289,7 +289,7 @@ export const baseProjects: readonly Project[] = [
     index: "05",
     name: "Poivre Blanc",
     year: "2025",
-    tags: ["Client", "Restaurant"],
+    tags: ["Client", "Mode Luxe"],
     kind: "Site sur-mesure",
     stack: "Next.js · GSAP",
     role: "Direction front-end & intégration",
@@ -301,7 +301,7 @@ export const baseProjects: readonly Project[] = [
     description:
       "Site sur-mesure pour la table Poivre Blanc, pensé comme une carte éditoriale. Hero plein cadre, mise en page magazine, transitions douces entre les sections menu, produit et histoire. Photographie au cœur du parcours, typographie serif expressive.",
     schemaKeywords:
-      "Next.js, GSAP, site restaurant, photographie éditoriale, typographie serif",
+      "Next.js, GSAP, site Mode Luxe, photographie éditoriale, typographie serif",
     gallery: [
       {
         src: "/projetSlider/poivreblanc/poivre-blanc.webp",

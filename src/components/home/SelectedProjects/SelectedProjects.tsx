@@ -67,7 +67,7 @@ const projects: readonly Project[] = [
   {
     index: "05",
     name: "Poivre Blanc",
-    tags: ["Client", "Restaurant"],
+    tags: ["Client", "Mode Luxe"],
     year: "2025",
     kind: "Site sur-mesure",
     stack: "Next.js · GSAP",
