@@ -18,6 +18,7 @@ import {
 } from "motion/react";
 import { ScrollTrigger } from "@/lib/gsap";
 import { getLenisSnapshot } from "@/lib/lenis";
+import { waitForReady as waitForAssetGate } from "@/lib/transitionGate";
 import styles from "./TransitionProvider.module.scss";
 
 // Page-transition curtain orchestrated with Motion's AnimatePresence.
@@ -36,6 +37,11 @@ import styles from "./TransitionProvider.module.scss";
 // AnimatePresence skip avoids fighting the browser's own scroll restoration.
 
 const COVER_HOLD_AFTER_PUSH_MS = 400;
+// Hard cap on how long we'll wait for the destination route to signal
+// it has painted its first frame. The asset gate is best-effort —
+// pages without heavy async assets resolve immediately, and a missing
+// release (network failure, dev HMR) can never freeze the curtain.
+const ASSET_READY_MAX_MS = 2000;
 // Slow start → fast end curve: the first ~20% barely moves, then the
 // curtain accelerates toward its landing. Same curve drives cover and
 // uncover, so both feel like they build momentum as they sweep across
@@ -119,9 +125,14 @@ export function TransitionProvider({
     [isTransitioning, pathname, reducedMotion, resetScrollAndRefresh, router],
   );
 
-  // Handle the "covered" moment — fired by Motion when the cover animation
-  // (initial -> animate) completes. At this point the overlay fully hides
-  // the page; perform the route change and the post-push grace.
+  // Handle the "covered" moment — fired by Motion when the cover
+  // animation (initial -> animate) completes. The overlay now fully
+  // hides the page; perform the route change, then hold the curtain
+  // until either (a) the new route signals its heavy assets have
+  // painted via the transition gate, or (b) the safety cap elapses.
+  // The 400ms grace gives React time to commit the new tree (and let
+  // its top-level component register its hold) before we start
+  // awaiting the gate.
   const handleCoverComplete = useCallback((): void => {
     const href = pendingHrefRef.current;
     if (!href) {
@@ -132,7 +143,9 @@ export function TransitionProvider({
     router.push(href);
     pendingHrefRef.current = null;
     window.setTimeout(() => {
-      setIsTransitioning(false);
+      void waitForAssetGate(ASSET_READY_MAX_MS).then(() => {
+        setIsTransitioning(false);
+      });
     }, COVER_HOLD_AFTER_PUSH_MS);
   }, [resetScrollAndRefresh, router]);
 

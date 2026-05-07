@@ -2,6 +2,7 @@
 
 import {
   Suspense,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -32,6 +33,7 @@ import {
   subscribe as subscribeRotondeStore,
 } from "@/components/projets/rotondeStore";
 import { useRotondeControls } from "./useRotondeControls";
+import { releaseAll as releaseTransitionGate } from "@/lib/transitionGate";
 
 // -------------------------------------------------------------------
 // Geometry — 3 rows × 4 angular slots. Top & bottom are offset by 30°
@@ -366,6 +368,7 @@ export function RotondeScene(): React.ReactElement {
       <group ref={groupRef}>
         <Suspense fallback={null}>
           <Rows />
+          <AssetReadyEmitter />
         </Suspense>
       </group>
 
@@ -382,6 +385,32 @@ export function RotondeScene(): React.ReactElement {
       </Suspense>
     </>
   );
+}
+
+// -------------------------------------------------------------------
+// Asset readiness signal
+// -------------------------------------------------------------------
+
+// Mounts only after the Rows Suspense boundary has resolved — which
+// means useTexture has decoded every project image. We then wait two
+// requestAnimationFrame ticks so the GPU uploads land and R3F paints
+// its first frame, then drain the transition gate. This is what
+// stops the page-transition curtain from lifting onto a still-empty
+// canvas. The component itself renders nothing.
+function AssetReadyEmitter(): null {
+  useEffect(() => {
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        releaseTransitionGate();
+      });
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+    };
+  }, []);
+  return null;
 }
 
 // -------------------------------------------------------------------
