@@ -113,7 +113,29 @@ export default function RootLayout({
   ].join(" ");
 
   return (
-    <html lang="fr">
+    // suppressHydrationWarning: the inline script in <head> flips this
+    // class to "js" before React hydrates, so the SSR'd "no-js" never
+    // matches the client className. Documented Next.js pattern for
+    // pre-hydration class flips (color-scheme, theme, JS detection).
+    <html lang="fr" className="no-js" suppressHydrationWarning>
+      <head>
+        {/*
+          JS-availability flag flipped before the body paints. SSR'd
+          markup ships in the "no-js" state so visitors without JS
+          (and pre-render snapshots) see the natural, fully-visible
+          layout. The script runs synchronously inside <head>, so by
+          the time first paint happens the class is "js" and any CSS
+          gated on it (Hero's pre-hide for the intro animation) takes
+          effect — no flash of fully-rendered content before useGSAP
+          can run its hide-then-animate sequence.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "document.documentElement.classList.remove('no-js');document.documentElement.classList.add('js');",
+          }}
+        />
+      </head>
       <body className={bodyClass}>
         <SkipLink />
         <SmoothScrollProvider>

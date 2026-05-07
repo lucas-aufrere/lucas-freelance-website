@@ -13,6 +13,59 @@
   }
 }
 
+// SSR pre-hide. The hero's intro animation is JS-driven (GSAP + the
+// split-text + tile stagger). Without this, the SSR'd HTML paints with
+// every animation target fully visible, then useGSAP runs in a layout
+// effect, calls gsap.set to hide them, and the next paint shows the
+// hidden state — that's the visible "flash" on first load.
+//
+// Matching the gsap.set initial values here means the very first paint
+// is already in the hidden state, the inline GSAP styles take over
+// without a visual change, and the timeline plays from a clean start.
+// Hero.tsx flips the attribute off once the JS path has set up so the
+// CSS rules stop applying for the duration of the animation; reduced-
+// motion + no-JS visitors keep everything visible (see overrides
+// below) so SEO crawlers and screen readers still see real content.
+// Scoped under :global(html.js) so no-JS visitors (and any crawler
+// that doesn't run scripts) keep the natural visible layout — the
+// inline script in app/layout.tsx flips html from "no-js" to "js"
+// before first paint.
+:global(html.js) .root[data-hero-pending="true"] {
+  .tile {
+    opacity: 0;
+    transform: translateY(18px) scale(0.88);
+  }
+  .titleWord,
+  .titleEyebrow,
+  .lead {
+    opacity: 0;
+  }
+  .ctas,
+  .divider {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  // Reduced motion bypasses the animation entirely — Hero.tsx still
+  // mounts but never plays the timeline, so the pre-hide must not
+  // apply or visitors would be left looking at a permanently empty
+  // hero.
+  @media (prefers-reduced-motion: reduce) {
+    .tile,
+    .titleWord,
+    .titleEyebrow,
+    .lead,
+    .ctas,
+    .divider {
+      opacity: 1;
+      transform: none;
+    }
+    .tile {
+      transform: scale(1.005);
+    }
+  }
+}
+
 .portrait {
   display: none;
 

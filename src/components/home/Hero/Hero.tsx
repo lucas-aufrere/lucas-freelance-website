@@ -167,6 +167,11 @@ export function Hero(): React.ReactElement {
         if (tileTargets.length > 0) {
           gsap.set(tileTargets, { opacity: 1, y: 0, scale: 1 });
         }
+        // Reduced-motion path skips the timeline entirely. Drop the
+        // pre-hide attribute so the CSS rules stop applying — without
+        // this the hero would stay visually empty for users on the
+        // reduced-motion preference.
+        root.removeAttribute("data-hero-pending");
         return;
       }
 
@@ -182,6 +187,11 @@ export function Hero(): React.ReactElement {
       if (tileTargets.length > 0) {
         gsap.set(tileTargets, { opacity: 0, y: 18, scale: 0.88 });
       }
+
+      // Inline gsap.set states now match the SSR-painted CSS pre-hide
+      // exactly — flip the attribute off so the CSS rules stop applying
+      // and the timeline can drive everything from inline styles alone.
+      root.removeAttribute("data-hero-pending");
 
       // Curtain still up — keep the initial hidden state and hold off
       // the timeline. The hook re-runs once isReady flips to true.
@@ -396,7 +406,18 @@ export function Hero(): React.ReactElement {
   };
 
   return (
-    <section className={styles.root} ref={rootRef} aria-labelledby="hero-title">
+    <section
+      className={styles.root}
+      ref={rootRef}
+      aria-labelledby="hero-title"
+      // Pre-hide flag consumed by the CSS rules in Hero.module.scss.
+      // Stays in the SSR'd HTML so the first paint is already in the
+      // hidden state; useGSAP removes it after gsap.set has put inline
+      // styles in place. Reduced-motion / no-JS visitors keep it set,
+      // but the matching media query / no-script path keeps content
+      // visible (see SCSS).
+      data-hero-pending="true"
+    >
       <div
         className={styles.portrait}
         aria-hidden="true"
